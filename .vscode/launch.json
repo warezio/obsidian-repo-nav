@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Obsidian Plugin",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "*": "${workspaceFolder}/*"
+      },
+      "webRoot": "${workspaceFolder}",
+      "timeout": 10000,
+      "preLaunchTask": "launch-obsidian"
+    }
+  ]
+}

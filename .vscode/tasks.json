@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-dev",
+      "type": "shell",
+      "command": "${env:HOME}/.bun/bin/bun run dev",
+      "group": "build",
+      "options": {
+        "env": {
+          "PATH": "${env:HOME}/.bun/bin:${env:PATH}"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "launch-obsidian",
+      "type": "shell",
+      "command": "open -a Obsidian --args --remote-debugging-port=9222",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "dependsOn": "build-dev"
+    }
+  ]
+}
