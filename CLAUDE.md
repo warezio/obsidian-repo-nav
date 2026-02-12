@@ -42,6 +42,7 @@ Both builds run in parallel. The production flag enables minification and disabl
   - Uses `Map<string, TreeNode>` for efficient path lookup when building hierarchy
   - `sortTree()` - Recursive sorting based on settings (folders-first, A-Z, Z-A)
   - Helper functions for parsing comma-separated extensions and excluded directories
+  - Hidden directory handling: Folders starting with `.` are included when `showHiddenDirs` is `true` (default)
 
 ### Settings
 - `src/settings.ts` - `RepoNavSettingTab` extends `PluginSettingTab`
@@ -77,3 +78,6 @@ Files are displayed without extensions (`fileName.replace(/\.[^.]+$/, "")`) but 
 
 ### Settings Persistence
 Settings are automatically persisted via Obsidian's `saveData()` and trigger tree refresh through `saveSettings()` callback.
+
+### Hidden Directory Support
+Hidden directories (folders starting with `.` like `.github`, `.obsidian`) are shown by default. This is controlled by the `showHiddenDirs` setting which defaults to `true`. When upgrading from older versions, the plugin will automatically enable hidden directory visibility.

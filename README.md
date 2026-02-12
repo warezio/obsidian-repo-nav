@@ -1,6 +1,6 @@
 ---
-feature: thumbnails/external/656a8ecabb6bb86e529238cf78733b61.failed.png
-thumbnail: thumbnails/resized/46e741d638d9458b27de2992816f201b_86cf658e.webp
+feature: thumbnails/external/656a8ecabb6bb86e529238cf78733b61.svg
+thumbnail: thumbnails/external/656a8ecabb6bb86e529238cf78733b61.svg
 ---
 # Obsidian Repository Navigator
 
@@ -12,12 +12,12 @@ A plugin for Obsidian that provides a filtered sidebar tree view showing only di
 ## Features
 
 - **Filtered Tree View**: Shows only directories containing Markdown (`.md`) files, hiding clutter from source code and build artifacts
-- **Hidden Directory Support**: Includes dot-prefixed directories (e.g., `.github`, `.obsidian`) when they contain Markdown files
+- **Hidden Directory Support**: Includes dot-prefixed directories (e.g., `.github`, `.obsidian`) when they contain Markdown files. Hidden directories are shown by default.
 - **Collapsible Directories**: Expand/collapse directory nodes with persistent state
 - **Auto-Refresh**: Tree updates automatically when files are created, deleted, or renamed
 - **Active File Highlighting**: Highlights the currently open file in the tree
 - **Customizable Settings**:
-  - Toggle hidden directory visibility
+  - Toggle hidden directory visibility (enabled by default)
   - Configure file extensions to include (default: `.md`)
   - Exclude specific directories (default: `node_modules`, `.git`)
   - Sort order options (folders-first, alphabetical A-Z, alphabetical Z-A)

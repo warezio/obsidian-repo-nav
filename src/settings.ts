@@ -17,7 +17,7 @@ export class RepoNavSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Show hidden directories")
       .setDesc(
-        "Include dot-prefixed directories (e.g., .github) in the tree."
+        "Include dot-prefixed directories (e.g., .github, .obsidian) in the tree. Hidden folders are shown by default."
       )
       .addToggle((toggle) =>
         toggle

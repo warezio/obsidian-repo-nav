@@ -57,11 +57,19 @@ export default class RepoNavPlugin extends Plugin {
   }
 
   async loadSettings(): Promise<void> {
+    const savedData = await this.loadData();
     this.settings = Object.assign(
       {},
       DEFAULT_SETTINGS,
-      await this.loadData()
+      savedData
     );
+    // Migration: ensure hidden directories are shown by default
+    // This ensures existing users get the fix when upgrading
+    if (this.settings.showHiddenDirs === false) {
+      // Only override if explicitly false, reset to true
+      this.settings.showHiddenDirs = true;
+      await this.saveData(this.settings);
+    }
   }
 
   async saveSettings(): Promise<void> {
