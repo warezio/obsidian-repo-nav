@@ -1,7 +1,15 @@
 {
-  "sessionCount": 10,
+  "activeFeatures": [
+    {
+      "feature": "context-menu-folders",
+      "phase": "do",
+      "taskId": "3",
+      "createdAt": "2026-02-12"
+    }
+  ],
+  "sessionCount": 12,
   "lastSession": {
-    "startedAt": "2026-02-12T15:28:55.877Z",
+    "startedAt": "2026-02-12T15:50:00.000Z",
     "platform": "claude",
     "level": "Dynamic"
   }

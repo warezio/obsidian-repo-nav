@@ -13,6 +13,7 @@ A plugin for Obsidian that provides a filtered sidebar tree view showing only di
 
 - **Filtered Tree View**: Shows only directories containing Markdown (`.md`) files, hiding clutter from source code and build artifacts
 - **Hidden Directory Support**: Includes dot-prefixed directories (e.g., `.github`, `.obsidian`) when they contain Markdown files. Hidden directories are shown by default.
+- **Context Menu for Folders**: Right-click any folder to expand or collapse all its descendants at once
 - **Collapsible Directories**: Expand/collapse directory nodes with persistent state
 - **Auto-Refresh**: Tree updates automatically when files are created, deleted, or renamed
 - **Active File Highlighting**: Highlights the currently open file in the tree
@@ -48,6 +49,7 @@ Once installed:
 - Click on any file to open it in the editor
 - `Ctrl/Cmd + Click` to open in a new tab
 - Click directory names to expand/collapse
+- **Right-click** on any folder to open context menu with "Expand All" and "Collapse All" options
 - Use the **Collapse All** and **Refresh** buttons in the header
 
 ### Settings

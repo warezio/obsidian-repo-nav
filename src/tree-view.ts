@@ -4,15 +4,87 @@ import { VIEW_TYPE_REPO_NAV, ICON_ID } from "./constants";
 import { TreeNode } from "./types";
 import { buildTree } from "./tree-builder";
 
+interface ContextMenuAction {
+  label: string;
+  icon: string;
+  action: () => void;
+}
+
+class ContextMenu {
+  private menuEl: HTMLElement | null = null;
+  private closeCallback: (() => void) | null = null;
+
+  constructor(private document: Document) {
+    this.setupGlobalClickListener();
+  }
+
+  show(x: number, y: number, actions: ContextMenuAction[]): void {
+    this.hide();
+
+    const menuEl = this.document.createElement("div");
+    menuEl.addClass("repo-nav-context-menu");
+
+    for (const action of actions) {
+      const itemEl = menuEl.createDiv({ cls: "repo-nav-context-menu-item" });
+      itemEl.createSpan({ cls: "repo-nav-context-menu-icon" });
+      setIcon(itemEl, action.icon);
+      itemEl.createSpan({ text: action.label });
+      itemEl.addEventListener("click", (e) => {
+        e.stopPropagation();
+        action.action();
+        this.hide();
+      });
+    }
+
+    this.document.body.appendChild(menuEl);
+
+    // Position menu at cursor with boundary detection
+    const menuWidth = 150;
+    const itemHeight = 36;
+    const menuHeight = actions.length * itemHeight + 8;
+
+    let posX = x;
+    let posY = y;
+
+    if (posX + menuWidth > this.document.body.clientWidth) {
+      posX = this.document.body.clientWidth - menuWidth - 8;
+    }
+
+    if (posY + menuHeight > this.document.body.clientHeight) {
+      posY = this.document.body.clientHeight - menuHeight - 8;
+    }
+
+    menuEl.style.left = `${posX}px`;
+    menuEl.style.top = `${posY}px`;
+
+    this.menuEl = menuEl;
+  }
+
+  hide(): void {
+    if (this.menuEl) {
+      this.menuEl.remove();
+      this.menuEl = null;
+    }
+  }
+
+  private setupGlobalClickListener(): void {
+    this.document.addEventListener("click", () => {
+      this.hide();
+    });
+  }
+}
+
 export class RepoNavTreeView extends ItemView {
   plugin: RepoNavPlugin;
   treeData: TreeNode | null = null;
   expandedPaths: Set<string> = new Set();
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private contextMenu: ContextMenu;
 
   constructor(leaf: WorkspaceLeaf, plugin: RepoNavPlugin) {
     super(leaf);
     this.plugin = plugin;
+    this.contextMenu = new ContextMenu(this.containerEl.ownerDocument);
   }
 
   getViewType(): string {
@@ -61,6 +133,50 @@ export class RepoNavTreeView extends ItemView {
     if (this.debounceTimer !== null) {
       clearTimeout(this.debounceTimer);
     }
+  }
+
+  private expandAll(folderPath: string): void {
+    const node = this.findNode(this.treeData, folderPath);
+    if (node) {
+      const paths = this.collectDescendantPaths(node);
+      for (const path of paths) {
+        this.expandedPaths.add(path);
+      }
+      this.renderView();
+    }
+  }
+
+  private collapseAll(folderPath: string): void {
+    const node = this.findNode(this.treeData, folderPath);
+    if (node) {
+      const paths = this.collectDescendantPaths(node);
+      for (const path of paths) {
+        this.expandedPaths.delete(path);
+      }
+      this.renderView();
+    }
+  }
+
+  private findNode(root: TreeNode | null, path: string): TreeNode | null {
+    if (!root) return null;
+    if (root.path === path) return root;
+
+    for (const child of root.children) {
+      const found = this.findNode(child, path);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  private collectDescendantPaths(node: TreeNode): string[] {
+    const paths: string[] = [];
+    if (node.type === "directory") {
+      paths.push(node.path);
+      for (const child of node.children) {
+        paths.push(...this.collectDescendantPaths(child));
+      }
+    }
+    return paths;
   }
 
   renderView(): void {
@@ -141,6 +257,23 @@ export class RepoNavTreeView extends ItemView {
           this.expandedPaths.add(node.path);
         }
         this.renderView();
+      });
+
+      nodeEl.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.contextMenu.show(e.clientX, e.clientY, [
+          {
+            label: "Expand All",
+            icon: "chevrons-up-down",
+            action: () => this.expandAll(node.path),
+          },
+          {
+            label: "Collapse All",
+            icon: "chevrons-down-up",
+            action: () => this.collapseAll(node.path),
+          },
+        ]);
       });
 
       if (isExpanded) {

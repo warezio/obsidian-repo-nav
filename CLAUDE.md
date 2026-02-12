@@ -81,3 +81,10 @@ Settings are automatically persisted via Obsidian's `saveData()` and trigger tre
 
 ### Hidden Directory Support
 Hidden directories (folders starting with `.` like `.github`, `.obsidian`) are shown by default. This is controlled by the `showHiddenDirs` setting which defaults to `true`. When upgrading from older versions, the plugin will automatically enable hidden directory visibility.
+
+### Context Menu for Folders
+Right-click on any folder in the tree to open a context menu with:
+- **Expand All**: Expands the selected folder and all its descendant folders
+- **Collapse All**: Collapses the selected folder and all its descendant folders
+
+The context menu is only available on folder nodes, not on file nodes. Click outside the menu to close it.
