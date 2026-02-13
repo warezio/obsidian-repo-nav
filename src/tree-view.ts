@@ -1,4 +1,4 @@
-import { ItemView, MarkdownRenderer, WorkspaceLeaf, TFile, setIcon } from "obsidian";
+import { ItemView, MarkdownRenderer, WorkspaceLeaf, TFile, TFolder, setIcon } from "obsidian";
 import type RepoNavPlugin from "./main";
 import { VIEW_TYPE_REPO_NAV, VIEW_TYPE_HIDDEN_FILE, ICON_ID } from "./constants";
 import { TreeNode } from "./types";
@@ -359,6 +359,36 @@ export class RepoNavTreeView extends ItemView {
 
   async openHiddenFile(filePath: string, newTab: boolean): Promise<void> {
     const leaf = this.app.workspace.getLeaf(newTab ? "tab" : false);
+
+    // Try to register the file in the vault for full editor support
+    try {
+      const content = await this.app.vault.adapter.read(filePath);
+
+      // Ensure parent folders exist in the vault
+      const segments = filePath.split("/");
+      segments.pop(); // remove filename
+      let folderPath = "";
+      for (const segment of segments) {
+        folderPath = folderPath ? folderPath + "/" + segment : segment;
+        if (!this.app.vault.getAbstractFileByPath(folderPath)) {
+          await this.app.vault.createFolder(folderPath);
+        }
+      }
+
+      // Create file in vault (writes same content + registers in vault index)
+      const file = await this.app.vault.create(filePath, content);
+      await leaf.openFile(file);
+      return;
+    } catch {
+      // vault.create() may fail if file already registered from a previous click
+      const existing = this.app.vault.getAbstractFileByPath(filePath);
+      if (existing instanceof TFile) {
+        await leaf.openFile(existing);
+        return;
+      }
+    }
+
+    // Ultimate fallback: read-only preview
     await leaf.setViewState({
       type: VIEW_TYPE_HIDDEN_FILE,
       state: { filePath },
@@ -397,6 +427,11 @@ export class HiddenFileView extends ItemView {
   }
 
   async onOpen(): Promise<void> {
+    this.addAction("external-link", "Open in default app", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.app as any).openWithDefaultApp(this.filePath);
+    });
+
     if (this.filePath) {
       await this.renderContent();
     }
@@ -404,17 +439,24 @@ export class HiddenFileView extends ItemView {
 
   private async renderContent(): Promise<void> {
     this.contentEl.empty();
+    this.contentEl.addClass("markdown-reading-view");
 
     const pathBar = this.contentEl.createDiv({ cls: "repo-nav-hidden-file-path" });
     pathBar.createSpan({ text: this.filePath });
 
-    const contentEl = this.contentEl.createDiv({ cls: "repo-nav-hidden-file-content markdown-rendered" });
+    const wrapper = this.contentEl.createDiv({
+      cls: "repo-nav-hidden-file-content markdown-preview-view markdown-rendered",
+    });
+
+    const sizer = wrapper.createDiv({
+      cls: "markdown-preview-sizer markdown-preview-section",
+    });
 
     try {
       const content = await this.app.vault.adapter.read(this.filePath);
-      await MarkdownRenderer.render(this.app, content, contentEl, this.filePath, this);
+      await MarkdownRenderer.render(this.app, content, sizer, this.filePath, this);
     } catch {
-      contentEl.createDiv({
+      sizer.createDiv({
         cls: "repo-nav-empty",
         text: "Unable to read file.",
       });
