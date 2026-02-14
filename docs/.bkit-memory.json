@@ -1,14 +1,14 @@
 {
   "activeFeatures": [
     {
-      "feature": "fix-hidden-files-open",
+      "feature": "hidden-file-editing",
       "phase": "do",
-      "type": "bugfix"
+      "type": "feature"
     }
   ],
-  "sessionCount": 18,
+  "sessionCount": 20,
   "lastSession": {
-    "startedAt": "2026-02-12T18:49:36.042Z",
+    "startedAt": "2026-02-13T20:29:15.788Z",
     "platform": "claude",
     "level": "Dynamic"
   },

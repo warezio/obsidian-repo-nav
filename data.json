@@ -1,0 +1,7 @@
+{
+  "showHiddenDirs": true,
+  "fileExtensions": ".md",
+  "excludedDirs": "node_modules,.git",
+  "sortOrder": "folders-first",
+  "collapseOnStartup": false
+}
